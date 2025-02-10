@@ -3,34 +3,55 @@ const Carosal = () => {
   const [data, setData] = useState([]);
   const [index, setIndex] = useState(0);
   const ref = useRef(null);
+
   useEffect(() => {
-    fetch("https://dummyjson.com/products")
+    fetch("https://dummyjson.com/products?.limit=6")
       .then((res) => res.json())
       .then((data) => setData(data?.products));
   }, []);
+
+  const startInterval = () => {
+    clearInterval(ref.current); // Clear any existing interval FIRST!
+    ref.current = setInterval(() => {
+      setIndex((prevIndex) => {
+        if (prevIndex === data.length - 1) {
+          return 0;
+        } else {
+          return prevIndex + 1;
+        }
+      });
+    }, 1000);
+  };
+
   useEffect(() => {
-    ref.current = setInterval(handleNext, 2000);
-    return () => clearInterval(ref.current);
+    startInterval(); // Start the interval initially
+    return () => clearInterval(ref.current); // Clear on unmount
   }, []);
+
   const handleNext = () => {
-    if (index === data?.length - 1) {
-      setIndex(0);
-    }
-    setIndex((prev) => prev + 1);
+    // No changes needed here
+    setIndex((prevIndex) => {
+      if (prevIndex === data.length - 1) {
+        return 0;
+      } else {
+        return prevIndex + 1;
+      }
+    });
   };
   const handlePrev = () => {
-    if (index === 0) {
-      setIndex(data?.length - 1);
-    }
-    setIndex((prev) => prev - 1);
+    setIndex((prevIndex) => {
+      if (index === 0) {
+        return data?.length - 1;
+      } else {
+        return prevIndex - 1;
+      }
+    });
   };
   return (
     <div
       className="container"
       onMouseEnter={() => clearInterval(ref.current)}
-      onMouseLeave={() => {
-        ref.current = setInterval(handleNext, 2000);
-      }}
+      onMouseLeave={() => startInterval()}
     >
       <button className="leftbtn" onClick={handlePrev}>
         {"<"}
