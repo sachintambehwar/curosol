@@ -1,7 +1,9 @@
+import Carosal from "./components/Carosal";
+
 function App() {
   return (
     <>
-      <div>hello</div>
+    <Carosal/>
     </>
   );
 }
